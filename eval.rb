@@ -41,19 +41,18 @@ module Eval
             @children.each do |c|
               children << Element.new(c,@context).eval
             end
+            if(children.length==1)
+              return children[0]
+            end
             if children[0].type!="FUNC"
               puts "Function expected, but #{children[0].type} node found"
               exit
             end
-            if(children.length==1)
-              @value=children[0].call
-            else
-              fn = children[0]
-              (1..children.length-1).each do |i|
-                fn = fn.call children[i]
-              end
-              @value = fn
+            fn = children[0]
+            (1..children.length-1).each do |i|
+              fn = fn.call children[i]
             end
+            @value = fn
           elsif @type=="MAIN"
             c = nil
             @children.each do |ch|
@@ -95,11 +94,16 @@ module Eval
           puts "Let function initial arguments expects ID,expr but found #{@children[i].nodes[0].type},expr with value #{@children[i].nodes[0].meta}"
           exit
         end
-        c[@children[i].nodes[0].meta] = nil
-      end
-      (1..@children.length-2).each do |i|
+        if c[@children[i].nodes[0].meta]!=nil
+          puts "Cannot redefine constant #{@children[i].nodes[0].meta} in let expression"
+          exit
+        end
+        #c[@children[i].nodes[0].meta] = nil
         c[@children[i].nodes[0].meta] = Element.new(@children[i].nodes[1],c).eval
       end
+      #(1..@children.length-2).each do |i|
+       # c[@children[i].nodes[0].meta] = Element.new(@children[i].nodes[1],c).eval
+      #end
       Element.new(@children[@children.length-1],c).eval
     end
 
