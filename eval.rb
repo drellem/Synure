@@ -26,11 +26,14 @@ module Eval
               exit
             end
             children=[]
+            if @children[0].meta=="lambda"
+              return lambda
+            end
             @children.each do |c|
               children << Element.new(c,@context).eval
             end
             if children[0].type!="FUNC"
-              puts "Function expected, but #{@children[0].type} node found"
+              puts "Function expected, but #{children[0].type} node found"
               exit
             end
             if(children.length==1)
@@ -51,8 +54,21 @@ module Eval
           end
           @value
     end #end fn
-  end #end class
 
+    def lambda
+      children = []
+      if @children.length!=3
+        puts "Lambda function expects two arguments"
+        exit
+      end
+      if @children[1].type!="ID"
+        puts "Lambda function first arguments expects ID but found #{@children[1].type}"
+        exit
+      end
+      Lambda.new(@children[1].meta,@children[2],@context)
+    end
+  end #end class
+      
   class Type
     def initialize(type,meta)
       @type=type
@@ -87,6 +103,22 @@ module Eval
       puts "FUNC"
     end
   end
+
+  class Lambda < Func
+    def initialize(id,ast,context)
+      @id = id
+      @ast = ast
+      @context=context
+      @type="FUNC"
+    end
+
+    def call a
+      c = @context
+      c[@id] = a
+      Element.new(@ast,c).eval
+    end
+  end
+
 
   class DefaultContext
     def self.init

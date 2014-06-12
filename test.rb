@@ -23,10 +23,11 @@ parser = Parse::Parser.new(lexer)
 a,d = parser.nxt
 a.print
 
-stream = Lex::Stream.new("(* 2 (+ 2 (- 10 5)))")
+stream = Lex::Stream.new("((lambda x (+ 1 x)) 3)")
 lexer = Lex::Lexer.new(stream)
 parser = Parse::Parser.new(lexer)
 i = Eval::Interpreter.new(parser)
 i.nxt.print
+
 
 puts "Test complete"
