@@ -35,6 +35,8 @@ module Eval
               return lambda
             elsif @children[0].meta=="let"
               return let
+            elsif @children[0].meta=="if"
+              return if_
             end
             @children.each do |c|
               children << Element.new(c,@context).eval
@@ -75,7 +77,7 @@ module Eval
     end
 
     def let
-      if @children.length<2
+      if @children.length<3
         puts "Let function expects at least two arguments."
         exit
       end
@@ -99,6 +101,20 @@ module Eval
         c[@children[i].nodes[0].meta] = Element.new(@children[i].nodes[1],c).eval
       end
       Element.new(@children[@children.length-1],c).eval
+    end
+
+    def if_
+      if @children.length!=4
+        puts "'If' function takes three arguments, but found #{@children.length-1} arguments"
+        exit
+      end
+      result = Element.new(@children[1],@context).eval
+      if result.type!="BOOL"
+        puts "'If' function expects first argument of type 'BOOL' but found argument of type #{result.type}"
+        exit
+      end
+      if result.meta=="true" then return Element.new(@children[2],@context).eval end
+      return Element.new(@children[3],@context).eval
     end
 
   end #end class
@@ -194,6 +210,14 @@ module Eval
             exit
           end
           Type.new("NUM",a.meta/b.meta)
+      end
+      }
+      @@context['true'] = Type.new("BOOL","true")
+      @@context['false'] = Type.new("BOOL","false")
+      @@context['='] = Func.new {|a| Func.new do |b|
+          if (a.type=="NUM"&&b.type=="NUM")||(a.type=="BOOL"&&b.type=="BOOL")
+            if a.meta==b.meta then @@context['true'] else @@context['false'] end
+          end
       end
       }
     end

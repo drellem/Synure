@@ -6,6 +6,7 @@ Features
 *Lambdas. Lambdas takes exactly one argument which is not in parentheses. This is for currying, and defun will add syntactic sugar for functions of higher arity later.
 *Currying.
 *Let expressions. These are equivalent to letrec by default.
+*If expressions. These require expressions for both the 'if' and 'else' outcomes.
 
 TODO (after basic features)
 =========================

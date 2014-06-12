@@ -64,7 +64,7 @@ module Lex
     def nxt
       curr = @stream.nxt
       if /\s/ =~ curr then nxt()
-      elsif /[a-zA-Z_\-+\/*^]/ =~ curr then id(curr)
+      elsif /[a-zA-Z_\-+\/*^=]/ =~ curr then id(curr)
       elsif /[0-9]/ =~ curr then num(curr)
       elsif /[(]/ =~ curr then Token.new("LP")
       elsif /[)]/ =~ curr then Token.new("RP")
@@ -76,7 +76,7 @@ module Lex
 
     def id c
       curr = @stream.nxt
-      if /[a-zA-Z0-9_\-+\/*^]/ =~ curr then id(c+curr)
+      if /[a-zA-Z0-9_\-+\/*^=]/ =~ curr then id(c+curr)
       else
         @stream.rewind
         Token.new("ID",c)

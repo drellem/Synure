@@ -37,6 +37,14 @@ eos
 lexer = Lex::Lexer.new(stream)
 parser = Parse::Parser.new(lexer)
 i = Eval::Interpreter.new(parser)
-raise "Lambda fail 1" unless i.nxt.meta==3
+raise "Let fail 1" unless i.nxt.meta==3
+
+stream = Lex::Stream.new <<-eos
+(if (= 1 2) 2 3)
+eos
+lexer = Lex::Lexer.new(stream)
+parser = Parse::Parser.new(lexer)
+i = Eval::Interpreter.new(parser)
+raise "If fail 1" unless i.nxt.meta==3
 
 puts "Test complete"
