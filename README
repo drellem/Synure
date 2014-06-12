@@ -5,8 +5,9 @@ Features
 *+,-,/,* functions. These take exactly one argument.
 *Lambdas. Lambdas takes exactly one argument which is not in parentheses. This is for currying, and defun will add syntactic sugar for functions of higher arity later.
 *Currying.
+*Let expressions. These are equivalent to letrec by default.
 
-TODO (after basic feature)
+TODO (after basic features)
 =========================
 *Lazy interpreter
 *Compiler to virtual stack machine (JVM?)
