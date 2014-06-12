@@ -1,0 +1,17 @@
+#####################
+Features
+#####################
+
+*Note, this is a work in progress.
+*+,-,/,* functions. These take exactly one argument.
+*Lambdas. Lambdas takes exactly one argument which is not in parentheses. This is for currying, and defun will add syntactic sugar for functions of higher arity later.
+*Currying.
+
+TODO (after basic feature)
+=========================
+*Lazy interpreter
+*Compiler to virtual stack machine (JVM?)
+
+Who am I?
+========
+A high school kid who is interested in language implementation.
