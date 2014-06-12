@@ -23,11 +23,20 @@ parser = Parse::Parser.new(lexer)
 a,d = parser.nxt
 a.print
 
-stream = Lex::Stream.new("((lambda x (+ 1 x)) 3)")
+stream = Lex::Stream.new("((lambda a (lambda b (+ a b))) 1 2)")
 lexer = Lex::Lexer.new(stream)
 parser = Parse::Parser.new(lexer)
 i = Eval::Interpreter.new(parser)
-i.nxt.print
+raise "Lambda fail 1" unless i.nxt.meta==3
 
+stream = Lex::Stream.new <<-eos
+(let (x 1)
+  (y (+ x 1))
+  (+ x y))
+eos
+lexer = Lex::Lexer.new(stream)
+parser = Parse::Parser.new(lexer)
+i = Eval::Interpreter.new(parser)
+raise "Lambda fail 1" unless i.nxt.meta==3
 
 puts "Test complete"

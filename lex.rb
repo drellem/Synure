@@ -9,6 +9,10 @@ module Lex
     def type
       @type
     end
+    
+    def type?
+      false
+    end
 
     def meta
       @meta

@@ -11,8 +11,13 @@ module Eval
       @context=context
     end
 
+    def type?
+      false
+    end
+
     def eval
-          if(@type=="NUM") then @value=Type.new("NUM",@ast.meta.to_f)
+          if @ast.type? then @value = @ast
+          elsif(@type=="NUM") then @value=Type.new("NUM",@ast.meta.to_f)
           elsif @type=="ID"
             val=@context[@ast.meta]
             if val==nil
@@ -28,6 +33,8 @@ module Eval
             children=[]
             if @children[0].meta=="lambda"
               return lambda
+            elsif @children[0].meta=="let"
+              return let
             end
             @children.each do |c|
               children << Element.new(c,@context).eval
@@ -56,7 +63,6 @@ module Eval
     end #end fn
 
     def lambda
-      children = []
       if @children.length!=3
         puts "Lambda function expects two arguments"
         exit
@@ -67,6 +73,34 @@ module Eval
       end
       Lambda.new(@children[1].meta,@children[2],@context)
     end
+
+    def let
+      if @children.length<2
+        puts "Let function expects at least two arguments."
+        exit
+      end
+      c = @context
+      (1..@children.length-2).each do |i|
+        if @children[i].type!="LIST"
+          puts "Let function initial arguments expects LIST but found #{@children[i].type}"
+          exit
+        end
+        if @children[i].nodes.length!=2
+          puts "Let function initial arguments expects LISTs of length 2 but found LIST of length #{@children[i].nodes.length}"
+          exit
+        end
+        if @children[i].nodes[0].type!="ID"
+          puts "Let function initial arguments expects ID,expr but found #{@children[i].nodes[0].type},expr with value #{@children[i].nodes[0].meta}"
+          exit
+        end
+        c[@children[i].nodes[0].meta] = nil
+      end
+      (1..@children.length-2).each do |i|
+        c[@children[i].nodes[0].meta] = Element.new(@children[i].nodes[1],c).eval
+      end
+      Element.new(@children[@children.length-1],c).eval
+    end
+
   end #end class
       
   class Type
@@ -85,6 +119,10 @@ module Eval
 
     def print
       puts @meta
+    end
+
+    def type?
+      true
     end
   end
 

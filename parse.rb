@@ -13,6 +13,10 @@ module Parse
       @token.type
     end
 
+    def type?
+      false
+    end
+
     def meta
       @token.meta
     end
