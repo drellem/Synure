@@ -35,19 +35,24 @@ module Parse
       true
     end
 
-    def print(indent=0)
-      str = ""
-      (0..indent).each do
-        str << "\t"
-      end
-      str << type + ";" + meta
-      puts str
-      @nodes.each do |n|
-        n.print indent+1
+    def to_s
+      if @nodes==[]
+        meta
+      else
+        s = "( "
+        @nodes.each do |n|
+          s << n.to_s << " "
+        end
+        s << ")"
       end
     end
+
     def nodes
       @nodes
+    end
+
+    def print
+      puts to_s
     end
   end
 
@@ -62,6 +67,11 @@ module Parse
       done = false
       if curr.type == "NUM" then ast.addChild(AST.new(curr))
       elsif curr.type == "ID" then ast.addChild(AST.new(curr))
+      elsif curr.type == "COMMA"
+        a = AST.new(Lex::Token.new("LIST"))
+        a.addChild(Lex::Token.new("ID","quote"))
+        a,d = nxt a
+        ast.addChild a
       elsif curr.type == "LP"
         a = AST.new(Lex::Token.new("LIST"))
         d = false

@@ -68,6 +68,7 @@ module Lex
       elsif /[0-9]/ =~ curr then num(curr)
       elsif /[(]/ =~ curr then Token.new("LP")
       elsif /[)]/ =~ curr then Token.new("RP")
+      elsif /[\']/ =~ curr then Token.new("COMMA")
       else
         puts "Unknown character #{curr}"
         exit

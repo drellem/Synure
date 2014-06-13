@@ -37,6 +37,8 @@ module Eval
               return let
             elsif @children[0].meta=="if"
               return if_
+            elsif @children[0].meta=="quote"
+              return quote
             end
             @children.each do |c|
               children << Element.new(c,@context).eval
@@ -121,6 +123,13 @@ module Eval
       return Element.new(@children[3],@context).eval
     end
 
+    def quote
+      if @children.length!=2
+        puts "Quote function expects one argument, but found #{@children.length-1} arguments."
+        exit
+      end
+      @children[1]
+    end
   end #end class
       
   class Type

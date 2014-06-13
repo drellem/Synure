@@ -21,7 +21,8 @@ stream = Lex::Stream.new("(a (b c) (d (e f)) 13)")
 lexer = Lex::Lexer.new(stream)
 parser = Parse::Parser.new(lexer)
 a,d = parser.nxt
-a.print
+raise "Parser fail 1" unless a.nodes[0].nodes[2].nodes[1].nodes[1].meta=="f"
+#a.print
 
 stream = Lex::Stream.new("((lambda a (lambda b (+ a b))) 1 2)")
 lexer = Lex::Lexer.new(stream)
@@ -46,5 +47,13 @@ lexer = Lex::Lexer.new(stream)
 parser = Parse::Parser.new(lexer)
 i = Eval::Interpreter.new(parser)
 raise "If fail 1" unless i.nxt.meta==3
+
+stream = Lex::Stream.new <<-eos
+'(im a happy camper lol)
+eos
+lexer = Lex::Lexer.new(stream)
+parser = Parse::Parser.new(lexer)
+i = Eval::Interpreter.new(parser)
+raise "Quote fail 1" unless i.nxt.type=="LIST"
 
 puts "Test complete"
