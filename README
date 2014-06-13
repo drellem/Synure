@@ -15,6 +15,7 @@ Features
 *Let expressions. These are equivalent to letrec by default.
 *If expressions. These require expressions for both the 'if' and 'else' outcomes.
 *Quotes. Both explicitly and with the ' operator.
+*Semicolon comments.
 
 TODO (after basic features)
 =========================

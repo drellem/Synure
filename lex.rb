@@ -69,6 +69,11 @@ module Lex
       elsif /[(]/ =~ curr then Token.new("LP")
       elsif /[)]/ =~ curr then Token.new("RP")
       elsif /[\']/ =~ curr then Token.new("COMMA")
+      elsif /[;]/ =~ curr
+        while(curr!="\n"&&curr!="\r\n")
+          curr=@stream.nxt
+        end
+        nxt
       else
         puts "Unknown character #{curr}"
         exit
