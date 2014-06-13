@@ -56,4 +56,21 @@ parser = Parse::Parser.new(lexer)
 i = Eval::Interpreter.new(parser)
 raise "Quote fail 1" unless i.nxt.type=="LIST"
 
+stream = Lex::Stream.new <<-eos
+(list 2 3 'b)
+eos
+lexer = Lex::Lexer.new(stream)
+parser = Parse::Parser.new(lexer)
+i = Eval::Interpreter.new(parser)
+raise "List fail 1" unless i.nxt.type=="LIST"
+
+stream = Lex::Stream.new <<-eos
+((fn (a b) (+ a b)) 2 3)
+eos
+lexer = Lex::Lexer.new(stream)
+parser = Parse::Parser.new(lexer)
+i = Eval::Interpreter.new(parser)
+i.nxt.print
+#raise "Fn fail 1" unless i.nxt.type=="LIST"
+
 puts "Test complete"

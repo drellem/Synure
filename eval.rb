@@ -39,6 +39,10 @@ module Eval
               return if_
             elsif @children[0].meta=="quote"
               return quote
+            elsif @children[0].meta=="list"
+              return list
+            elsif @children[0].meta=="fn"
+              return fn
             end
             @children.each do |c|
               children << Element.new(c,@context).eval
@@ -130,6 +134,42 @@ module Eval
       end
       @children[1]
     end
+
+    def list
+      a = Parse::AST.new(Lex::Token.new("LIST"))
+      (1..@children.length-1).each do |i|
+        a.addChild(Element.new(@children[i],@context).eval)
+      end
+      a
+    end
+
+    def fn
+      if @children.length!=3
+        puts "Fn function expects 2 arguments, but found #{@children.length-1} arguments"
+        exit
+      end
+      if @children[1].type!="LIST"
+        puts "Fn first argument expects type LIST, but found type #{@children[1].type}"
+        exit
+      end
+      if @children[1].children.length==1
+        @children[1]=@children[1].children[0]
+        return lambda
+      end
+      a = buildLambda(@children[1].children[@children[1].children.length-1],@children[2])
+      (@children[1].children.length-2..0).each do |i|
+        a = buildLambda(@children[1].children[i],a)
+      end
+      Element.new(a,@context).eval
+    end
+
+    def buildLambda(id,ast)
+      a = Lex::Token.new("LIST")
+      b = id
+      d = Lex::Token.new("ID","lambda")
+      Parse::AST.new(a,[d,b,ast])
+    end
+
   end #end class
       
   class Type
@@ -147,11 +187,15 @@ module Eval
     end
 
     def print
-      puts @meta
+      puts to_s
     end
 
     def type?
       true
+    end
+
+    def to_s
+      @meta.to_s
     end
   end
 

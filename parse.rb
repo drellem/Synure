@@ -50,6 +50,10 @@ module Parse
     def nodes
       @nodes
     end
+    
+    def children
+      @nodes
+    end
 
     def print
       puts to_s

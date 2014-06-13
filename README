@@ -10,8 +10,8 @@ Features
 ============
 *Note, this is a work in progress.
 *+,-,/,* functions. These take exactly one argument.
-*Lambdas. Lambdas takes exactly one argument which is not in parentheses. This is for currying, and defun will add syntactic sugar for functions of higher arity later.
-*Currying.
+*Lambdas. Lambdas takes exactly one argument which is not in parentheses.
+*Currying. This uses an 'fn' syntax similar to the lambda form but with multiple arguments.
 *Let expressions. These are equivalent to letrec by default.
 *If expressions. These require expressions for both the 'if' and 'else' outcomes.
 *Quotes. Both explicitly and with the ' operator.
