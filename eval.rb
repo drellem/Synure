@@ -86,7 +86,7 @@ module Eval
         puts "Let function expects at least two arguments."
         exit
       end
-      c = @context
+      c = @context.clone
       (1..@children.length-2).each do |i|
         if @children[i].type!="LIST"
           puts "Let function initial arguments expects LIST but found #{@children[i].type}"
@@ -277,6 +277,11 @@ module Eval
           end
       end
       }
+      @@toplevel = @@context.clone
+    end
+
+    def self.toplevel
+      @@toplevel
     end
 
     def self.context
@@ -291,9 +296,9 @@ module Eval
     end
 
     def nxt
+      @parser.clear
       a,d = @parser.nxt
-      e = Element.new(a,DefaultContext.context).eval
-      return e
+      Element.new(a,DefaultContext.toplevel).eval
     end
   end
 end

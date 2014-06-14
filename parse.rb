@@ -91,5 +91,9 @@ module Parse
       end
       return ast, done
     end
+
+    def clear
+      @ast = AST.new(Lex::Token.new("MAIN"))
+    end
   end
 end

@@ -70,7 +70,6 @@ eos
 lexer = Lex::Lexer.new(stream)
 parser = Parse::Parser.new(lexer)
 i = Eval::Interpreter.new(parser)
-i.nxt.print
-#raise "Fn fail 1" unless i.nxt.type=="LIST"
+raise "Fn fail 1" unless i.nxt.meta==5
 
 puts "Test complete"
