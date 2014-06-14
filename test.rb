@@ -72,4 +72,12 @@ parser = Parse::Parser.new(lexer)
 i = Eval::Interpreter.new(parser)
 raise "Fn fail 1" unless i.nxt.meta==5
 
+stream = Lex::Stream.new <<-eos
+(define a 5)
+a
+eos
+lexer = Lex::Lexer.new(stream)
+parser = Parse::Parser.new(lexer)
+i = Eval::Interpreter.new(parser)
+raise "Define fail 1" unless i.nxt.meta==5
 puts "Test complete"

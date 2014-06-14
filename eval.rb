@@ -4,11 +4,12 @@ require 'Parse'
 module Eval
   
   class Element
-    def initialize(ast, context)
+    def initialize(ast, context,toplevel=false)
       @ast=ast
       @type = ast.type
       @children = ast.nodes
       @context=context
+      @toplevel=toplevel
     end
 
     def type?
@@ -43,6 +44,8 @@ module Eval
               return list
             elsif @children[0].meta=="fn"
               return fn
+            elsif @toplevel
+              if @children[0].meta=="define" then return define end
             end
             @children.each do |c|
               children << Element.new(c,@context).eval
@@ -62,7 +65,7 @@ module Eval
           elsif @type=="MAIN"
             c = nil
             @children.each do |ch|
-              c = Element.new(ch,@context).eval
+              c = Element.new(ch,@context,true).eval
             end
             @value=c
           end
@@ -161,6 +164,23 @@ module Eval
         a = buildLambda(@children[1].children[i],a)
       end
       Element.new(a,@context).eval
+    end
+
+    def define
+      if @children.length!=3
+        puts "Define function expects 2 arguments, but found #{@children.length-1} arguments"
+        exit
+      end
+      if @children[1].type!="ID"
+        puts "Define function first argument expects type ID, but found type #{@children[1].type}"
+        exit
+      end
+      if @context[@children[1].meta]!=nil
+        puts "Constant #{@children[1].meta} already defined at toplevel."
+        exit
+      end
+      @context[@children[1].meta]=Element.new(@children[2],@context).eval
+      Type.new("ID","TOPLEVEL")
     end
 
     def buildLambda(id,ast)
@@ -298,7 +318,8 @@ module Eval
     def nxt
       @parser.clear
       a,d = @parser.nxt
-      Element.new(a,DefaultContext.toplevel).eval
+      e = Element.new(a,DefaultContext.toplevel,true).eval
+      if e.meta=="TOPLEVEL" then nxt else e end
     end
   end
 end

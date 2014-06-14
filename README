@@ -6,6 +6,8 @@ Example
 
 => 6.0
 
+For other code examples see examples.rb and test.rb
+
 Features
 ============
 *Note, this is a work in progress.
@@ -16,6 +18,7 @@ Features
 *If expressions. These require expressions for both the 'if' and 'else' outcomes.
 *Quotes. Both explicitly and with the ' operator.
 *Semicolon comments.
+*Top-level 'define' form.
 
 TODO (after basic features)
 =========================
