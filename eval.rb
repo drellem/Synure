@@ -45,7 +45,9 @@ module Eval
             elsif @children[0].meta=="fn"
               return fn
             elsif @toplevel
-              if @children[0].meta=="define" then return define end
+              if @children[0].meta=="define" then return define
+              elsif @children[0].meta=="defn" then return defn 
+              end
             end
             @children.each do |c|
               children << Element.new(c,@context).eval
@@ -181,6 +183,15 @@ module Eval
       end
       @context[@children[1].meta]=Element.new(@children[2],@context).eval
       Type.new("ID","TOPLEVEL")
+    end
+
+    def defn
+      if @children.length!=4
+        puts "Defn function expects 3 arguments, but found #{@children.length-1} arguments"
+        exit
+      end
+      a = Parse::AST.new(Lex::Token.new("LIST"),[Lex::Token.new("ID","fn"),@children[2],@children[3]])
+      Element.new(Parse::AST.new(Lex::Token.new("LIST"), [Lex::Token.new("ID","define"),@children[1],a]),@context,true).eval
     end
 
     def buildLambda(id,ast)

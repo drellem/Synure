@@ -80,4 +80,16 @@ lexer = Lex::Lexer.new(stream)
 parser = Parse::Parser.new(lexer)
 i = Eval::Interpreter.new(parser)
 raise "Define fail 1" unless i.nxt.meta==5
+
+stream = Lex::Stream.new <<-eos
+(defn fac (n)
+  (if (= n 0)
+      1
+      (* n (fac (- n 1)))))
+(- (fac 3) 1)
+eos
+lexer = Lex::Lexer.new(stream)
+parser = Parse::Parser.new(lexer)
+i = Eval::Interpreter.new(parser)
+raise "Defn fail 1" unless i.nxt.meta==5
 puts "Test complete"

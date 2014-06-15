@@ -19,6 +19,7 @@ Features
 *Quotes. Both explicitly and with the ' operator.
 *Semicolon comments.
 *Top-level 'define' form.
+*Top-level defn form.
 
 TODO (after basic features)
 =========================
