@@ -21,7 +21,7 @@ module Eval
           elsif(@type=="NUM") then @value=Type.new("NUM",@ast.meta.to_f)
           elsif @type=="ID"
             val=@context[@ast.meta]
-            if val==nil
+            unless val
               puts "Object #{@ast.meta} not defined"
               exit
             end
@@ -49,9 +49,14 @@ module Eval
               elsif @children[0].meta=="defn" then return defn 
               end
             end
-            @children.each do |c|
+            children[0]=Element.new(@children[0],@context).eval
+            if children[0].type=="MACRO"
+              return (children[0].eval @children[1..@children.length-1])
+            end
+            @children[1..@children.length-1].each do |c|
               children << Element.new(c,@context).eval
             end
+            
             if(children.length==1)
               return children[0]
             end
@@ -60,7 +65,9 @@ module Eval
               exit
             end
             fn = children[0]
+            #puts children[0].to_s + ":"
             (1..children.length-1).each do |i|
+             # children[i].print
               fn = fn.call children[i]
             end
             @value = fn
@@ -228,6 +235,10 @@ module Eval
     def to_s
       @meta.to_s
     end
+
+    def nodes
+      []
+    end
   end
 
   class Func < Type
@@ -241,8 +252,8 @@ module Eval
       @fn.call a
     end
 
-    def print
-      puts "FUNC"
+    def to_s
+      "FUNC"
     end
   end
 
@@ -255,9 +266,61 @@ module Eval
     end
 
     def call a
-      c = @context
+      c = @context.clone
       c[@id] = a
       Element.new(@ast,c).eval
+    end
+
+    def ast
+      @ast
+    end
+    
+    def to_s
+      "FUNC"
+    end
+  end
+
+  class Macro < Type
+    def initialize(vars,ast,context)
+      @vars=vars
+      @ast=ast
+      @context=context
+      @type="MACRO"
+      @args = []
+    end
+    
+    def macro_expand a
+      i = nil
+      if a.type=="ID"&&i=@vars.index(a.meta)
+        return Element.new(@args[i],@context).eval
+      end
+      if a.type=="MAIN"
+        #puts a.children[0]
+        return a.children[0]
+      end
+      if a.type=="LIST"
+        b = a.clone
+        b.children = []
+        a.children.each do |c|
+          d = macro_expand(c)
+          b.children.concat([d])
+        end
+        return b
+      end
+      a
+    end
+
+    def eval args
+      if @vars.length!=args.length
+        puts "Macro expected #{@vars.length} arguments but found #{args.length}"
+        exit
+      end
+      @args = args
+      e = Element.new(macro_expand( @ast),@context).eval
+      #puts c['z']
+      #puts c['b']
+      e = Element.new(macro_expand(e),@context).eval
+      #e = Element.new(Element.new(@ast,c).eval,c).eval
     end
   end
 
@@ -306,8 +369,10 @@ module Eval
           if (a.type=="NUM"&&b.type=="NUM")||(a.type=="BOOL"&&b.type=="BOOL")
             if a.meta==b.meta then @@context['true'] else @@context['false'] end
           end
-      end
+       end
       }
+      p,d = Parse::Parser.new(Lex::Lexer.new(Lex::Stream.new("'(if z (if b true false) false)"))).nxt
+      @@context['and']=Macro.new ['z','b'], p, @@context.clone
       @@toplevel = @@context.clone
     end
 

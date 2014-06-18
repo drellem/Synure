@@ -2,7 +2,7 @@ $LOAD_PATH << '.'
 require 'Lex'
 require 'Parse'
 require 'Eval'
-
+=begin
 stream = Lex::Stream.new("abc")
 raise "Stream fail" unless stream.peek=="a"
 raise "Stream fail" unless stream.nxt=="a"
@@ -24,6 +24,7 @@ a,d = parser.nxt
 raise "Parser fail 1" unless a.nodes[0].nodes[2].nodes[1].nodes[1].meta=="f"
 #a.print
 
+#Problem here
 stream = Lex::Stream.new("((lambda a (lambda b (+ a b))) 1 2)")
 lexer = Lex::Lexer.new(stream)
 parser = Parse::Parser.new(lexer)
@@ -39,6 +40,7 @@ lexer = Lex::Lexer.new(stream)
 parser = Parse::Parser.new(lexer)
 i = Eval::Interpreter.new(parser)
 raise "Let fail 1" unless i.nxt.meta==3
+
 
 stream = Lex::Stream.new <<-eos
 (if (= 1 2) 2 3)
@@ -92,4 +94,15 @@ lexer = Lex::Lexer.new(stream)
 parser = Parse::Parser.new(lexer)
 i = Eval::Interpreter.new(parser)
 raise "Defn fail 1" unless i.nxt.meta==5
+puts "Test complete"
+
+=end
+
+stream = Lex::Stream.new <<-eos
+(if (and true false) 3 2)
+eos
+lexer = Lex::Lexer.new(stream)
+parser = Parse::Parser.new(lexer)
+i = Eval::Interpreter.new(parser)
+raise "And fail 1" unless i.nxt.meta==2
 puts "Test complete"
