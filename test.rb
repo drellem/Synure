@@ -2,7 +2,7 @@ $LOAD_PATH << '.'
 require 'Lex'
 require 'Parse'
 require 'Eval'
-=begin
+
 stream = Lex::Stream.new("abc")
 raise "Stream fail" unless stream.peek=="a"
 raise "Stream fail" unless stream.nxt=="a"
@@ -69,6 +69,7 @@ raise "List fail 1" unless i.nxt.type=="LIST"
 stream = Lex::Stream.new <<-eos
 ((fn (a b) (+ a b)) 2 3)
 eos
+
 lexer = Lex::Lexer.new(stream)
 parser = Parse::Parser.new(lexer)
 i = Eval::Interpreter.new(parser)
@@ -94,9 +95,8 @@ lexer = Lex::Lexer.new(stream)
 parser = Parse::Parser.new(lexer)
 i = Eval::Interpreter.new(parser)
 raise "Defn fail 1" unless i.nxt.meta==5
-puts "Test complete"
 
-=end
+
 
 stream = Lex::Stream.new <<-eos
 (if (and true false) 3 2)
