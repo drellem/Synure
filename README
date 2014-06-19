@@ -20,6 +20,7 @@ Features
 *Semicolon comments.
 *Top-level 'define' form.
 *Top-level defn form.
+*Macros with defmacro.
 
 TODO (after basic features)
 =========================

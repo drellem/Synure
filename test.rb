@@ -96,8 +96,6 @@ parser = Parse::Parser.new(lexer)
 i = Eval::Interpreter.new(parser)
 raise "Defn fail 1" unless i.nxt.meta==5
 
-
-
 stream = Lex::Stream.new <<-eos
 (if (and true false) 3 2)
 eos
@@ -105,4 +103,14 @@ lexer = Lex::Lexer.new(stream)
 parser = Parse::Parser.new(lexer)
 i = Eval::Interpreter.new(parser)
 raise "And fail 1" unless i.nxt.meta==2
+
+stream = Lex::Stream.new <<-eos
+(defmacro or (a b) '(if a true b))
+(or true false)
+eos
+lexer = Lex::Lexer.new(stream)
+parser = Parse::Parser.new(lexer)
+i = Eval::Interpreter.new(parser)
+raise "Defmacro fail 1" unless i.nxt.meta=='true'
+
 puts "Test complete"

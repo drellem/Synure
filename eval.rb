@@ -46,7 +46,8 @@ module Eval
               return fn
             elsif @toplevel
               if @children[0].meta=="define" then return define
-              elsif @children[0].meta=="defn" then return defn 
+              elsif @children[0].meta=="defn" then return defn
+              elsif @children[0].meta=="defmacro" then return defmacro
               end
             end
             children[0]=Element.new(@children[0],@context).eval
@@ -62,6 +63,9 @@ module Eval
             end
             if children[0].type!="FUNC"
               puts "Function expected, but #{children[0].type} node found"
+              children.each do |c|
+                c.print
+              end
               exit
             end
             fn = children[0]
@@ -199,6 +203,35 @@ module Eval
       end
       a = Parse::AST.new(Lex::Token.new("LIST"),[Lex::Token.new("ID","fn"),@children[2],@children[3]])
       Element.new(Parse::AST.new(Lex::Token.new("LIST"), [Lex::Token.new("ID","define"),@children[1],a]),@context,true).eval
+    end
+
+    def defmacro
+      if @children.length!=4
+        puts "Defmacro function expects 3 arguments, but found #{@children.length-1} arguments"
+        exit
+      end
+      if @children[1].type!="ID"
+        puts "Defmacro function first argument expects type ID, but found type #{@children[1].type}"
+        exit
+      end
+      if @context[@children[1].meta]
+        puts "Constant #{@children[1].meta} already defined at toplevel."
+        exit
+      end
+      vars = []
+      if @children[2].type!="LIST"
+        puts "Defmacro function second argument expects type LIST but found type #{@children[2].type}"
+        exit
+      end
+      @children[2].children.each do |c|
+        if c.type!="ID"
+          puts "Defmacro arguments should be of type ID but one argument is of type #{c.type}"
+          exit
+        end
+        vars << c.meta
+      end
+      @context[@children[1].meta] = Macro.new vars, @children[3], @context.clone
+      Type.new "ID", "TOPLEVEL"
     end
 
     def buildLambda(id,ast)
@@ -371,7 +404,7 @@ module Eval
           end
        end
       }
-      p,d = Parse::Parser.new(Lex::Lexer.new(Lex::Stream.new("'(if z (if b true false) false)"))).nxt
+      p,d = Parse::Parser.new(Lex::Lexer.new(Lex::Stream.new("'(if z b false)"))).nxt
       @@context['and']=Macro.new ['z','b'], p, @@context.clone
       @@toplevel = @@context.clone
     end

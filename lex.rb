@@ -74,8 +74,11 @@ module Lex
           curr=@stream.nxt
         end
         nxt
+      elsif !curr
+        puts "Unexpected end of file"
+        exit
       else
-        puts "Unknown character #{curr}"
+        puts "Unknown character #{curr}."
         exit
       end
     end
